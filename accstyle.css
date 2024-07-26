@@ -161,3 +161,17 @@ input[type=date]{
 
 
 }
+select[name="numarticle"] {
+    width: 100px; /* Largeur du menu déroulant */
+    padding: 2px; /* Espacement interne */
+    border: 1px solid #ccc; /* Bordure grise */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #f9f9f9; /* Couleur de fond */
+    font-size: 14px; /* Taille de la police */
+    font-family: Arial, sans-serif; /* Police de caractères */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+select[name="numarticle"] option {
+    padding: 10px;  
+    border:none;
+}

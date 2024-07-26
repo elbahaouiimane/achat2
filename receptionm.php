@@ -85,7 +85,13 @@ require_once 'queries_sql.php';
         <th>Actions</th>
     </tr>
     <tr>
-        <td contentEditable="true"></td>
+        <td contentEditable="true"><select name="numarticle">
+        <?php foreach ($numarticles as $numarticle): ?>
+            <option value="<?php echo htmlspecialchars($numarticle); ?>">
+                <?php echo htmlspecialchars($numarticle); ?>
+            </option>
+        <?php endforeach; ?>
+    </select></td>
         <td contentEditable="true"></td>
         <td contentEditable="true"> <input type="number" value="1" min="1" class="quantity-input" /></td>
         <td contentEditable="true"></td>

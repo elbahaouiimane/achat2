@@ -19,20 +19,19 @@ try {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $fournisseurs[] = $row['CardName'];
     }
-    $sqlItems = "SELECT ItemCode, Dscription, Price FROM PDN1";
+    $sqlItems = "SELECT ItemCode FROM PDN1 ORDER BY ItemCode";
     $stmtItems = $conn->query($sqlItems);
 
     // Récupération des résultats pour les articles
-    $articles = [];
+    $numarticles = [];
     while ($row = $stmtItems->fetch(PDO::FETCH_ASSOC)) {
-        $articles[] = $row;
+        $numarticles[] = $row['ItemCode'];
     }
     
 } catch (PDOException $e) {
     echo "Erreur de connexion : " . $e->getMessage();
 }
 ?>
-
 
 
 
