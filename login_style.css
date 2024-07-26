@@ -1,0 +1,83 @@
+.logo {
+    width: 130px; /* Largeur du logo */
+    height: auto; /* Hauteur automatique pour maintenir les proportions */
+    position: absolute; /* Position absolue par rapport au coin supérieur gauche du viewport */
+    top: 30px; /* Décalage du haut */
+    left: 20px; /* Décalage de la gauche */
+    z-index: 1000; 
+}
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h2 {
+    color: #000000;
+    text-align: center; /* Centrer le titre */
+   /* padding-top: 1px;*/
+    margin-top: 6px;
+    font-size: 22px; /* Espacement entre le titre et le formulaire */
+}
+
+form {
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+    border-radius: 7px;
+    margin-bottom:12px;
+}
+
+label {
+    /*font-weight: bold;*/
+    display: block;
+    margin-bottom: 7px;
+    text-align: left;
+    font-size:15px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 12px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: smaller;
+    
+    
+}
+
+button[type="submit"] {
+   width: 102%;
+    padding: 10px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+    font-size: smaller;
+   
+
+}
+
+button[type="submit"]:hover {
+    background-color: #d02020;
+    font-weight: bold;
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+}

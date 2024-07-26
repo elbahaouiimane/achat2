@@ -1,0 +1,163 @@
+ .logo{
+    width: 8%;
+}
+h1{
+    font-size:smaller;
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    color: #333;
+    font-family:arial,sans-serif;
+    font-size: smaller;
+}
+table {
+    font-family: Arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    font-size: smaller;
+}
+
+th {
+    background-color: #ffffff; /* Couleur de fond pour les en-têtes */
+    color: #333; /* Couleur de texte */
+}
+
+tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+header {
+    background-color: #ffffff;
+    padding: 10px 0px;
+    position: relative;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+nav li {
+    margin-left: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    font-family:arial,sans-serif;
+    font-size: small;
+}
+
+nav a:hover {
+    background-color: #ddd; /* Survol des liens */
+}
+
+.divider {
+    width: 100%;
+    height: 2px;
+    background-color: rgba(10, 10, 10, 0.196); /* Trait transparent */
+    margin-top: 10px;
+}
+.btn-ajouter {
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border: none;
+    padding: 1px 12px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn-modifier {
+    background-color: transparent;
+    color: #000000;
+    border: none;
+   /* padding: 5px 9px;
+    margin-bottom: 9px;*/
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn-supprimer {
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    border: none;
+   /* padding: 5px 9px;
+    margin-bottom: 5px;*/
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+.btn-valider {
+    background-color: rgb(64, 160, 35);
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    margin-left:2px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-ajouter:hover {
+    background-color: rgb(46, 45, 45);
+}
+
+.btn-valider:hover {
+    background-color: rgb(47, 175, 47);
+}
+.quantity-input {
+    width: 40px; /* Largeur du champ */
+    padding: 5px; /* Espacement interne */
+    border: 1px solid #ccc; /* Bordure légère */
+    border-radius: 4px; /* Coins arrondis */
+    text-align: center; /* Centrer le texte */
+}
+
+.quantity-input:focus {
+    border-color: #4CAF50; /* Couleur de bordure lors du focus */
+    
+    outline: none; /* Supprimer l'outline par défaut */
+}
+select[name="fournisseur"] {
+    width: 65px; /* Largeur du menu déroulant */
+    padding: 2px; /* Espacement interne */
+    border: 1px solid #ccc; /* Bordure grise */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #f9f9f9; /* Couleur de fond */
+    font-size: 14px; /* Taille de la police */
+    font-family: Arial, sans-serif; /* Police de caractères */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+}
+
+/* Style des options dans le menu déroulant */
+select[name="fournisseur"] option {
+    padding: 10px;  
+    border:none;
+}
+input[type=date]{
+    width: 110px; /* Largeur du menu déroulant */
+    padding: 2px; /* Espacement interne */
+    border: 1px solid #ccc; /* Bordure grise */
+    border-radius: 5px; /* Coins arrondis */
+    background-color: #f9f9f9; /* Couleur de fond */
+    font-size: 14px; /* Taille de la police */
+    font-family: Arial, sans-serif; /* Police de caractères */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombre légère */
+
+
+}
