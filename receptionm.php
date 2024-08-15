@@ -67,7 +67,6 @@ try {
         document.addEventListener('DOMContentLoaded', () => {
             populateArticleSelectors(); // Peupler les sélecteurs d'articles au chargement de la page
             populateWHSSelectors(); // Peupler les sélecteurs de magasins au chargement de la page
-            updateTotal(); // Calculer le total global au chargement de la page
         });
 
         function populateArticleSelectors() {
@@ -126,7 +125,7 @@ try {
                 // Mettre à jour le prix unitaire
                 priceCell.textContent = price;
                 
-                // Mettre à jour le total brut
+                // Mettre à jour le total brut si la quantité est déjà définie
                 updateTotal(row);
             }
 
@@ -135,7 +134,7 @@ try {
         }
 
         function updateTotal(row) {
-            // Fonction pour calculer le total brut pour une ligne
+            // Fonction pour calculer le total brut
             const priceCell = row.querySelector('td[name="price"]');
             const quantityInput = row.querySelector('input.quantity-input');
             const totalCell = row.querySelector('td[contenteditable]');
@@ -148,24 +147,22 @@ try {
 
             // Mettre à jour la cellule du total brut
             totalCell.textContent = total.toFixed(2);
-
-            // Recalculer le total global
+            
+            // Mettre à jour le total global
             updateGlobalTotal();
         }
 
         function updateGlobalTotal() {
-            // Fonction pour calculer le total global
-            const rows = document.querySelectorAll('#articleTable tr:not(:first-child)');
-            let grandTotal = 0;
-
-            rows.forEach(row => {
-                const totalCell = row.querySelector('td[contenteditable]');
-                const total = parseFloat(totalCell.textContent) || 0;
-                grandTotal += total;
+            // Calculer le total global
+            let totalGlobal = 0;
+            const totalCells = document.querySelectorAll('#articleTable td[contenteditable]');
+            totalCells.forEach(cell => {
+                const total = parseFloat(cell.textContent) || 0;
+                totalGlobal += total;
             });
 
-            // Mettre à jour le champ total avec le total global
-            document.getElementById('total').value = grandTotal.toFixed(2);
+            // Afficher le total global dans l'élément d'entrée
+            document.getElementById('total').value = totalGlobal.toFixed(2);
         }
 
         function addNewRow() {
@@ -252,13 +249,16 @@ try {
         }
 
         function validatePurchase() {
-            alert('Achat validé avec un total.');
+            // Afficher le message avec le total
+            const totalGlobal = document.getElementById('total').value;
+            alert('Achat validé avec un total de ' + totalGlobal + ' MAD.');
         }
 
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);
-            updateGlobalTotal(); // Recalculer le total global après suppression
+            // Recalculer le total global après suppression de la ligne
+            updateGlobalTotal();
         }
     </script>
 </head>
