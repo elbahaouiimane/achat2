@@ -67,6 +67,7 @@ try {
         document.addEventListener('DOMContentLoaded', () => {
             populateArticleSelectors(); // Peupler les sélecteurs d'articles au chargement de la page
             populateWHSSelectors(); // Peupler les sélecteurs de magasins au chargement de la page
+            updateTotal(); // Calculer le total global au chargement de la page
         });
 
         function populateArticleSelectors() {
@@ -125,7 +126,7 @@ try {
                 // Mettre à jour le prix unitaire
                 priceCell.textContent = price;
                 
-                // Mettre à jour le total brut si la quantité est déjà définie
+                // Mettre à jour le total brut
                 updateTotal(row);
             }
 
@@ -134,7 +135,7 @@ try {
         }
 
         function updateTotal(row) {
-            // Fonction pour calculer le total brut
+            // Fonction pour calculer le total brut pour une ligne
             const priceCell = row.querySelector('td[name="price"]');
             const quantityInput = row.querySelector('input.quantity-input');
             const totalCell = row.querySelector('td[contenteditable]');
@@ -147,6 +148,24 @@ try {
 
             // Mettre à jour la cellule du total brut
             totalCell.textContent = total.toFixed(2);
+
+            // Recalculer le total global
+            updateGlobalTotal();
+        }
+
+        function updateGlobalTotal() {
+            // Fonction pour calculer le total global
+            const rows = document.querySelectorAll('#articleTable tr:not(:first-child)');
+            let grandTotal = 0;
+
+            rows.forEach(row => {
+                const totalCell = row.querySelector('td[contenteditable]');
+                const total = parseFloat(totalCell.textContent) || 0;
+                grandTotal += total;
+            });
+
+            // Mettre à jour le champ total avec le total global
+            document.getElementById('total').value = grandTotal.toFixed(2);
         }
 
         function addNewRow() {
@@ -239,6 +258,7 @@ try {
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
             row.parentNode.removeChild(row);
+            updateGlobalTotal(); // Recalculer le total global après suppression
         }
     </script>
 </head>
@@ -322,7 +342,7 @@ try {
     </tr>
 </table>
 
-<h1>Total : <input type="text" id="total" /></h1>
+<h1>Total : <input type="text" id="total" readonly /></h1>
 <button class="btn-valider" onclick="validatePurchase()">Valider l'achat</button>
 
 </body>
