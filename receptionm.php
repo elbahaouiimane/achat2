@@ -102,13 +102,13 @@ try {
             // Fonction pour mettre à jour la ligne en fonction du numéro d'article sélectionné
             const selectedArticle = select.value;
             const row = select.closest('tr'); // Trouver la ligne correspondante
-            const descriptionSelect = row.querySelector('select[name="description"]');
+            const descriptionCell = row.querySelector('td[name="description"]');
             const priceCell = row.querySelector('td[name="price"]');
             const quantityInput = row.querySelector('input.quantity-input');
             const totalCell = row.querySelector('td[contenteditable]');
 
-            // Vider les sélecteurs de description et de prix
-            descriptionSelect.innerHTML = '';
+            // Vider les cellules de description et de prix
+            descriptionCell.textContent = '';
             priceCell.textContent = '';
 
             // Ajouter la description et le prix correspondants si l'article existe
@@ -116,11 +116,8 @@ try {
                 const description = articlesData[selectedArticle].description;
                 const price = articlesData[selectedArticle].price;
 
-                // Ajouter la description au sélecteur de description
-                const descriptionOption = document.createElement('option');
-                descriptionOption.value = description;
-                descriptionOption.textContent = description;
-                descriptionSelect.appendChild(descriptionOption);
+                // Mettre à jour la cellule de description
+                descriptionCell.textContent = description;
 
                 // Mettre à jour le prix unitaire
                 priceCell.textContent = price;
@@ -178,16 +175,14 @@ try {
                     select.name = 'numarticle';
                     cell.appendChild(select);
                 } else if (i === 1) {
-                    // Cellule pour le sélecteur de description
-                    const select = document.createElement('select');
-                    select.name = 'description';
-                    cell.appendChild(select);
+                    // Cellule pour la description (texte direct)
+                    cell.setAttribute('name', 'description');
                 } else if (i === 2) {
                     // Cellule pour la quantité avec un champ de saisie
                     cell.innerHTML = '<input type="number" value="1" min="1" class="quantity-input" />';
                 } else if (i === 3) {
                     // Cellule pour le prix unitaire
-                    cell.setAttribute('name', 'price'); // Ajouter un attribut name pour identifier la cellule
+                    cell.setAttribute('name', 'price');
                 } else if (i === 4) {
                     // Cellule pour le magasin (avec sélecteur)
                     const select = document.createElement('select');
@@ -210,9 +205,8 @@ try {
                 </button>
             `;
 
-            // Peupler les sélecteurs d'articles, de descriptions, et de magasins de la nouvelle ligne
+            // Peupler les sélecteurs d'articles, et de magasins de la nouvelle ligne
             populateArticleSelectorsForNewRow(newRow);
-            populateDescriptionSelectorsForNewRow(newRow);
             populateWHSSelectorsForNewRow(newRow);
         }
 
@@ -228,13 +222,6 @@ try {
             select.addEventListener('change', function() {
                 updateRow(this);
             });
-        }
-
-        function populateDescriptionSelectorsForNewRow(row) {
-            // Fonction pour peupler le sélecteur de descriptions d'une nouvelle ligne
-            const select = row.querySelector('select[name="description"]');
-            // Les descriptions doivent être mises à jour dynamiquement via updateRow
-            select.innerHTML = '';
         }
 
         function populateWHSSelectorsForNewRow(row) {
@@ -285,65 +272,70 @@ try {
         <?php endforeach; ?>
     </select>
 </h1>
+
 <h1>Date : <input type="date" id="date_achat" /></h1>
 
 <button class="btn-ajouter" onclick="addNewRow()">+</button>
+
 <table id="articleTable">
-    <tr>
-        <th>Numéro d'article</th>
-        <th>Description d'article</th>
-        <th>Quantité</th>
-        <th>Prix unitaire</th>
-        <th>Magasin</th>
-        <th>Total brut (DI)</th>
-        <th>Actions</th>
-    </tr>
-    <tr>
-        <td>
-            <select name="numarticle">
+    <thead>
+        <tr>
+            <th>Numéro d'article</th>
+            <th>Description d'article</th>
+            <th>Quantité</th>
+            <th>Prix unitaire</th>
+            <th>Magasin</th>
+            <th>Total brut (DI)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <select name="numarticle">
+                    <?php foreach ($articlesData as $numarticle => $data): ?>
+                        <option value="<?php echo htmlspecialchars($numarticle); ?>">
+                            <?php echo htmlspecialchars($numarticle); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td name="description">
                 <?php foreach ($articlesData as $numarticle => $data): ?>
-                    <option value="<?php echo htmlspecialchars($numarticle); ?>">
-                        <?php echo htmlspecialchars($numarticle); ?>
-                    </option>
+                    <span style="display:none;"><?php echo htmlspecialchars($data['description']); ?></span>
                 <?php endforeach; ?>
-            </select>
-        </td>
-        <td>
-            <select name="description">
-                <?php foreach ($articlesData as $numarticle => $data): ?>
-                    <option value="<?php echo htmlspecialchars($data['description']); ?>">
-                        <?php echo htmlspecialchars($data['description']); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </td>
-        <td>
-            <input type="number" value="1" min="1" class="quantity-input" />
-        </td>
-        <td name="price"></td>
-        <td>
-            <select name="whs">
-                <?php foreach ($whscode as $whscodes): ?>
-                    <option value="<?php echo htmlspecialchars($whscodes); ?>">
-                        <?php echo htmlspecialchars($whscodes); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </td>
-        <td contentEditable="true"></td>
-        <td>
-            <button class="btn-modifier" onclick="alert('Modifier cet article')">
-                <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn-supprimer" onclick="deleteRow(this)">
-                <i class="bi bi-trash"></i>
-            </button>
-        </td>
-    </tr>
+            </td>
+            <td>
+                <input type="number" value="1" min="1" class="quantity-input" />
+            </td>
+            <td name="price"></td>
+            <td>
+                <select name="whs">
+                    <?php foreach ($whscode as $whscodes): ?>
+                        <option value="<?php echo htmlspecialchars($whscodes); ?>">
+                            <?php echo htmlspecialchars($whscodes); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+            <td contentEditable="true"></td>
+            <td>
+                <button class="btn-modifier" onclick="alert('Modifier cet article')">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn-supprimer" onclick="deleteRow(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>
+    </tbody>
 </table>
 
-<h1>Total : <input type="text" id="total" readonly /></h1>
-<button class="btn-valider" onclick="validatePurchase()">Valider l'achat</button>
+<!-- Réajustement pour garder la même disposition -->
+<div class="total-container">
+    <h1>Total : <input type="text" id="total" readonly /></h1>
+    <button class="btn-valider" onclick="validatePurchase()">Valider l'achat</button>
+</div>
 
 </body>
 </html>
