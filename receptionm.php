@@ -8,11 +8,11 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Inclure le fichier de requêtes SQL
-$serverName = "SRV-SAP10"; // Replace with your SQL Server name or IP address
+$serverName = "SRV-SAP10"; // Remplacez par le nom de votre serveur SQL ou l'adresse IP
 $connectionOptions = array(
-    "Database" => "SAP", // Replace with your database name
-    "Uid" => "sa", // Replace with your SQL Server username
-    "PWD" => "bpsmaroc" // Replace with your SQL Server password
+    "Database" => "SAP", // Remplacez par le nom de votre base de données
+    "Uid" => "sa", // Remplacez par votre nom d'utilisateur SQL Server
+    "PWD" => "bpsmaroc" // Remplacez par votre mot de passe SQL Server
 );
 
 try {
@@ -104,7 +104,9 @@ try {
             const row = select.closest('tr'); // Trouver la ligne correspondante
             const descriptionSelect = row.querySelector('select[name="description"]');
             const priceCell = row.querySelector('td[name="price"]');
-            
+            const quantityInput = row.querySelector('input.quantity-input');
+            const totalCell = row.querySelector('td[contenteditable]');
+
             // Vider les sélecteurs de description et de prix
             descriptionSelect.innerHTML = '';
             priceCell.textContent = '';
@@ -122,7 +124,29 @@ try {
 
                 // Mettre à jour le prix unitaire
                 priceCell.textContent = price;
+                
+                // Mettre à jour le total brut si la quantité est déjà définie
+                updateTotal(row);
             }
+
+            // Écouter les changements dans la quantité
+            quantityInput.addEventListener('input', () => updateTotal(row));
+        }
+
+        function updateTotal(row) {
+            // Fonction pour calculer le total brut
+            const priceCell = row.querySelector('td[name="price"]');
+            const quantityInput = row.querySelector('input.quantity-input');
+            const totalCell = row.querySelector('td[contenteditable]');
+            
+            const price = parseFloat(priceCell.textContent) || 0;
+            const quantity = parseInt(quantityInput.value, 10) || 0;
+
+            // Calculer le total brut
+            const total = price * quantity;
+
+            // Mettre à jour la cellule du total brut
+            totalCell.textContent = total.toFixed(2);
         }
 
         function addNewRow() {
