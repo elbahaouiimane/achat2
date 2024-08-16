@@ -106,6 +106,8 @@ try {
             const priceCell = row.querySelector('td[name="price"]');
             const quantityInput = row.querySelector('input.quantity-input');
             const totalCell = row.querySelector('td[contenteditable]');
+            const articleSelect = row.querySelector('select[name="numarticle"]');
+            const whsSelect = row.querySelector('select[name="whs"]');
 
             // Vider les cellules de description et de prix
             descriptionCell.textContent = '';
@@ -125,6 +127,10 @@ try {
                 // Mettre à jour le total brut si la quantité est déjà définie
                 updateTotal(row);
             }
+
+            // Désactiver les sélecteurs après sélection
+            articleSelect.disabled = true;
+            whsSelect.disabled = true;
 
             // Écouter les changements dans la quantité
             quantityInput.addEventListener('input', () => updateTotal(row));
@@ -197,7 +203,7 @@ try {
             // Ajouter la cellule pour les boutons d'action (dernière cellule)
             const actionCell = newRow.insertCell(6); // 6 est l'index de la colonne des actions
             actionCell.innerHTML = `
-                <button class="btn-modifier" onclick="toggleEdit(this)">
+                <button class="btn-modifier" onclick="enableEdit(this)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn-supprimer" onclick="deleteRow(this)">
@@ -251,37 +257,23 @@ try {
             }
         }
 
-        function toggleEdit(button) {
-            // Basculer entre mode édition et non-édition
-            const row = button.parentNode.parentNode;
-            const isEditing = row.classList.contains('editing');
-            
-            // Activer ou désactiver les champs en fonction du mode
-            const cells = row.querySelectorAll('select, td[contenteditable]');
-            cells.forEach(cell => {
-                cell.disabled = isEditing;
-                cell.contentEditable = isEditing ? 'true' : 'false';
-            });
-            
-            // Changer le texte du bouton
-            button.innerHTML = isEditing
-                ? '<i class="bi bi-pencil"></i>'
-                : '<i class="bi bi-check"></i>';
+        function enableEdit(button) {
+            const row = button.closest('tr');
+            const articleSelect = row.querySelector('select[name="numarticle"]');
+            const whsSelect = row.querySelector('select[name="whs"]');
 
-            // Basculer la classe d'édition
-            row.classList.toggle('editing');
+            // Réactiver les sélecteurs pour modification
+            articleSelect.disabled = false;
+            whsSelect.disabled = false;
         }
 
         window.addEventListener('beforeunload', function (e) {
-            // Texte de confirmation
-            var confirmationMessage = 'Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir quitter ?';
+            // Le message par défaut de la boîte de dialogue de confirmation
+            const confirmationMessage = 'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?';
 
-            // Standard pour les navigateurs modernes
-            e.preventDefault();
-            e.returnValue = confirmationMessage;
-
-            // Standard pour les navigateurs anciens
-            return confirmationMessage;
+            // Afficher le message de confirmation
+            e.returnValue = confirmationMessage; // Standard
+            return confirmationMessage; // Pour certains navigateurs
         });
     </script>
 </head>
@@ -356,7 +348,7 @@ try {
             </td>
             <td contentEditable="true"></td>
             <td>
-                <button class="btn-modifier" onclick="toggleEdit(this)">
+                <button class="btn-modifier" onclick="enableEdit(this)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn-supprimer" onclick="deleteRow(this)">
