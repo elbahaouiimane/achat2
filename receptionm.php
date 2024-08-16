@@ -197,7 +197,7 @@ try {
             // Ajouter la cellule pour les boutons d'action (dernière cellule)
             const actionCell = newRow.insertCell(6); // 6 est l'index de la colonne des actions
             actionCell.innerHTML = `
-                <button class="btn-modifier" onclick="alert('Modifier cet article')">
+                <button class="btn-modifier" onclick="toggleEdit(this)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn-supprimer" onclick="deleteRow(this)">
@@ -243,10 +243,46 @@ try {
 
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
-            row.parentNode.removeChild(row);
-            // Recalculer le total global après suppression de la ligne
-            updateGlobalTotal();
+            const confirmDelete = confirm("Êtes-vous sûr de vouloir supprimer cette ligne ?");
+            if (confirmDelete) {
+                row.parentNode.removeChild(row);
+                // Recalculer le total global après suppression de la ligne
+                updateGlobalTotal();
+            }
         }
+
+        function toggleEdit(button) {
+            // Basculer entre mode édition et non-édition
+            const row = button.parentNode.parentNode;
+            const isEditing = row.classList.contains('editing');
+            
+            // Activer ou désactiver les champs en fonction du mode
+            const cells = row.querySelectorAll('select, td[contenteditable]');
+            cells.forEach(cell => {
+                cell.disabled = isEditing;
+                cell.contentEditable = isEditing ? 'true' : 'false';
+            });
+            
+            // Changer le texte du bouton
+            button.innerHTML = isEditing
+                ? '<i class="bi bi-pencil"></i>'
+                : '<i class="bi bi-check"></i>';
+
+            // Basculer la classe d'édition
+            row.classList.toggle('editing');
+        }
+
+        window.addEventListener('beforeunload', function (e) {
+            // Texte de confirmation
+            var confirmationMessage = 'Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir quitter ?';
+
+            // Standard pour les navigateurs modernes
+            e.preventDefault();
+            e.returnValue = confirmationMessage;
+
+            // Standard pour les navigateurs anciens
+            return confirmationMessage;
+        });
     </script>
 </head>
 <body>
@@ -320,7 +356,7 @@ try {
             </td>
             <td contentEditable="true"></td>
             <td>
-                <button class="btn-modifier" onclick="alert('Modifier cet article')">
+                <button class="btn-modifier" onclick="toggleEdit(this)">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button class="btn-supprimer" onclick="deleteRow(this)">
