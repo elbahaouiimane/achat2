@@ -242,10 +242,53 @@ try {
         }
 
         function validatePurchase() {
-            // Afficher le message avec le total
+    // Récupérer les lignes du tableau et les convertir en JSON
+    const rows = Array.from(document.querySelectorAll('#articleTable tbody tr'));
+    const data = rows.map(row => {
+        return {
+            numarticle: row.querySelector('select[name="numarticle"]').value,
+            description: row.querySelector('td[name="description"]').textContent,
+            quantity: row.querySelector('input.quantity-input').value,
+            price: row.querySelector('td[name="price"]').textContent,
+            whs: row.querySelector('select[name="whs"]').value,
+            total: row.querySelector('td[contenteditable]').textContent
+        };
+    });
+
+    const totalGlobal = document.getElementById('total').value;
+    const fournisseur = document.querySelector('select[name="fournisseur"]').value;
+    const dateAchat = document.getElementById('date_achat').value;
+
+    // Créer l'objet JSON à envoyer au serveur
+    const requestData = {
+        fournisseur: fournisseur,
+        dateAchat: dateAchat,
+        totalGlobal: totalGlobal,
+        data: data
+    };
+
+    // Envoyer les données au serveur via AJAX
+    fetch('submit_purchase.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
             const totalGlobal = document.getElementById('total').value;
             alert('Achat validé avec un total de ' + totalGlobal + ' MAD.');
+        } else {
+            alert('Erreur : ' + result.message);
         }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de l\'enregistrement des données.');
+    });
+}
 
         function deleteRow(button) {
             const row = button.parentNode.parentNode;
