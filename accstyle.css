@@ -134,7 +134,7 @@ nav a:hover {
     outline: none; /* Supprimer l'outline par défaut */
 }
 select[name="fournisseur"] {
-    width: 65px; /* Largeur du menu déroulant */
+    width: 90px; /* Largeur du menu déroulant */
     padding: 2px; /* Espacement interne */
     border: 1px solid #ccc; /* Bordure grise */
     border-radius: 5px; /* Coins arrondis */

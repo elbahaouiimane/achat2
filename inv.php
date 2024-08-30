@@ -22,10 +22,9 @@ if ($conn->connect_error) {
 }
 
 // Requête SQL pour récupérer l'historique des achats
-$sql = "SELECT r.id AS reception_id, r.fournisseur, r.date_achat, r.total_global,
-               i.numarticle, i.description, i.quantity, i.price, i.whs, i.total
+$sql = "SELECT r.id AS reception_id, r.fournisseur, r.date_achat, r.total_global
         FROM receptions r
-        LEFT JOIN reception_items i ON r.id = i.reception_id
+        GROUP BY r.id
         ORDER BY r.date_achat DESC, r.id DESC";
 
 $result = $conn->query($sql);
@@ -35,7 +34,21 @@ $achats = array();
 if ($result->num_rows > 0) {
     // Stocker les résultats dans un tableau
     while($row = $result->fetch_assoc()) {
-        $achats[] = $row;
+        $achats[$row['reception_id']] = $row;
+    }
+}
+
+// Préparer les articles pour chaque ID de réception
+$articles = array();
+$sql_items = "SELECT i.reception_id, i.numarticle, i.description, i.quantity, i.price, i.total
+              FROM reception_items i
+              ORDER BY i.reception_id, i.numarticle";
+
+$result_items = $conn->query($sql_items);
+
+if ($result_items->num_rows > 0) {
+    while ($row = $result_items->fetch_assoc()) {
+        $articles[$row['reception_id']][] = $row;
     }
 }
 
@@ -51,111 +64,74 @@ $conn->close();
     <link rel="stylesheet" href="accstyle.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <style>
-        table {
-            font-family: Arial, sans-serif;
-            border-collapse: collapse;
+        /* Styles existants ici... */
+
+        /* Styles pour la fenêtre modale */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
             width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
         }
 
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-            font-size: smaller;
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
         }
 
-        th {
-            background-color: #ffffff;
-            color: #333;
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
         }
 
-        tr:nth-child(even) {
-            background-color: #f5f5f5;
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
 
-        .logo {
-            width: 8%;
-        }
-
-        h1 {
-            font-size: smaller;
-            font-family: Arial, sans-serif;
-            color: #333;
-        }
-
-        .btn-modifier, .btn-supprimer, .btn-valider {
+        .print-button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
+            text-decoration: none;
         }
 
-        .btn-modifier {
-            background-color: transparent;
-            color: #000000;
-        }
-
-        .btn-supprimer {
-            background-color: transparent;
-            color: rgb(0, 0, 0);
+        .print-button:hover {
+            background-color: #0056b3;
         }
 
         .btn-valider {
-            background-color: rgb(64, 160, 35);
+            font-size: 14px; /* Rétrécir la taille du bouton */
+            padding: 5px 10px; /* Rétrécir le bouton */
+            background-color: #28a745;;
             color: white;
             border: none;
-            padding: 8px 10px;
-            margin-left: 2px;
-        }
-
-        .btn-ajouter {
-            background-color: rgb(0, 0, 0);
-            color: white;
-            border: none;
-            padding: 1px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-ajouter:hover {
-            background-color: rgb(0, 0, 0);
         }
 
         .btn-valider:hover {
-            background-color: rgb(47, 175, 47);
-        }
-
-        .quantity-input {
-            width: 40px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .quantity-input:focus {
-            border-color: #4CAF50;
-            outline: none;
-        }
-
-        select {
-            width: 100px;
-            padding: 2px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        select option {
-            padding: 10px;
-            border: none;
-        }
-
-        .total-container {
-            margin-top: 20px;
+            background-color: #28a745;;
         }
     </style>
 </head>
@@ -183,31 +159,59 @@ $conn->close();
                 <th>Fournisseur</th>
                 <th>Date d'Achat</th>
                 <th>Total Global</th>
-                <th>Numéro d'Article</th>
-                <th>Description</th>
-                <th>Quantité</th>
-                <th>Prix Unitaire</th>
-                <th>Magasin</th>
-                <th>Total Brut</th>
+                <th>Facture</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($achats as $achat): ?>
+            <?php foreach ($achats as $id => $achat): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($achat['reception_id']); ?></td>
                     <td><?php echo htmlspecialchars($achat['fournisseur']); ?></td>
                     <td><?php echo htmlspecialchars($achat['date_achat']); ?></td>
                     <td><?php echo htmlspecialchars($achat['total_global']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['numarticle']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['description']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['quantity']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['price']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['whs']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['total']); ?></td>
+                    <td>
+                        <button class="btn-valider" onclick="openModal(<?php echo htmlspecialchars($id); ?>)">Génerer</button>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </div>
+
+<!-- Fenêtre modale pour la facture -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <iframe id="invoiceFrame" style="width:100%; height:600px; border:none;"></iframe>
+        
+    </div>
+</div>
+
+<script>
+    function openModal(id) {
+        var modal = document.getElementById('myModal');
+        var iframe = document.getElementById('invoiceFrame');
+        iframe.src = 'facture.php?id=' + id;
+        modal.style.display = 'flex';
+    }
+
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function() {
+        var modal = document.getElementById('myModal');
+        modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+        var modal = document.getElementById('myModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function printInvoice() {
+        var iframe = document.getElementById('invoiceFrame');
+        iframe.contentWindow.print();
+    }
+</script>
 </body>
 </html>
