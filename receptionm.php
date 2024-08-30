@@ -327,6 +327,7 @@ try {
         <nav>
             <ul>
                 <li><a href="receptionm.php">Réception de Marchandises</a></li>
+                <li><a href="inv.php">Historique des Achats</a></li>
                 <li><a href="logout.php">Déconnexion</a></li>
             </ul>
         </nav>
